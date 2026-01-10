@@ -15,8 +15,10 @@ Sistem valuasi aset properti berbasis Machine Learning (Random Forest & K-Means)
     pip install -r requirements.txt
 2. **Latih Model (Hanya Sekali)**
     Sebelum menjalankan web, AI harus dilatih terlebih dahulu
+    ```bash
     python train_pipeline.py
     tunggu sampai folder 'models/' muncul
 3. **Jalankan Aplikasi**
+    ```bash
     python app.py
     Buka browser dan akses: http://localhost:5000
