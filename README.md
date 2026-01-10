@@ -126,25 +126,3 @@ python analisis.py
 
 
 3. The script will output the **RMSE** and **Silhouette Score** in the terminal and generate detailed CSV reports in the folder.
-
-## Disclaimer
-
-This software is developed for educational and research purposes as part of the Master of Computer Science curriculum (Group 7). The valuation estimates provided by the system are based on historical data patterns and should be used as a reference tool, not as a certified appraisal.
-
----
-
-© 2025 Group 7 - Data Mining Project. All Rights Reserved.
-
-```
-
-### Tips Tambahan untuk Anda:
-Jangan lupa membuat file `requirements.txt` di folder root (sejajar dengan README ini) agar instruksi instalasi di atas valid. Isi `requirements.txt`-nya cukup:
-
-```text
-flask
-pandas
-numpy
-scikit-learn
-joblib
-
-```
