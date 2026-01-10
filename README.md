@@ -1,4 +1,3 @@
-```markdown
 # Surabaya Property Valuation & Segmentation System
 
 ## Project Overview
@@ -25,8 +24,7 @@ The project is structured into three main components:
 ## Project Directory Structure
 Ensure your project folder follows this specific hierarchy for the scripts to function correctly:
 
-```text
-/PropInsight_Project_Root
+/root
 │
 ├── README.md                           # Project documentation
 ├── requirements.txt                    # List of Python dependencies
