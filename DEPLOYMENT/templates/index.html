@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analisis Harga Rumah Surabaya | Kelompok 7</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+
+        .glass-header {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        /* Custom scrollbar for form area if it gets too long */
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+
+<body class="text-slate-800 antialiased">
+
+    <nav class="glass-header sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-slate-900 rounded-lg flex items-center justify-center text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="font-bold text-xl tracking-tight text-slate-900 leading-none">PropInsight<span
+                            class="text-blue-600">.Pro</span></h1>
+                    <p class="text-xs text-slate-500 font-medium tracking-wide">KELOMPOK 7 PROJECT</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <span class="text-xs font-semibold text-slate-500">Surabaya Region Data</span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto p-6 lg:p-10">
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+
+            <div class="lg:col-span-4">
+                <div
+                    class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 sticky top-28 max-h-[85vh] overflow-y-auto custom-scroll">
+                    <div class="mb-6 border-b border-slate-100 pb-4">
+                        <h2 class="text-lg font-bold text-slate-900">Property Config</h2>
+                        <p class="text-sm text-slate-500">Masukkan 12 parameter aset.</p>
+                    </div>
+
+                    <form method="POST" action="/" class="space-y-6">
+
+                        <div class="space-y-4">
+                            <h3 class="text-xs font-bold text-blue-600 uppercase tracking-wider">1. Lokasi & Legalitas
+                            </h3>
+
+                            <div>
+                                <label class="block text-xs font-medium text-slate-500 mb-1">Kecamatan</label>
+                                <select name="kecamatan"
+                                    class="w-full bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-blue-500 block p-2.5">
+                                    {% for item in kecamatan_list %}
+                                    <option value="{{ item }}" {% if input and input['Kecamatan']==item %}selected{%
+                                        endif %}>{{ item }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-medium text-slate-500 mb-1">Sertifikat</label>
+                                <select name="sertifikat"
+                                    class="w-full bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-blue-500 block p-2.5">
+                                    {% for item in sertifikat_list %}
+                                    <option value="{{ item }}" {% if input and input['Sertifikat']==item %}selected{%
+                                        endif %}>{{ item }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4 pt-4 border-t border-slate-100">
+                            <h3 class="text-xs font-bold text-blue-600 uppercase tracking-wider">2. Fisik Bangunan</h3>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-500 mb-1">L. Tanah (m²)</label>
+                                    <input type="number" name="luas_tanah"
+                                        value="{{ input['Luas Tanah'] if input else 100 }}"
+                                        class="w-full bg-slate-50 border border-slate-300 rounded-lg text-sm p-2.5"
+                                        required>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-500 mb-1">L. Bangunan
+                                        (m²)</label>
+                                    <input type="number" name="luas_bangunan"
+                                        value="{{ input['Luas Bangunan'] if input else 80 }}"
+                                        class="w-full bg-slate-50 border border-slate-300 rounded-lg text-sm p-2.5"
+                                        required>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-3">
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-500 mb-1">K.Tidur</label>
+                                    <input type="number" name="kamar_tidur"
+                                        value="{{ input['Kamar Tidur'] if input else 3 }}"
+                                        class="w-full bg-slate-50 border border-slate-300 rounded-lg text-sm p-2.5"
+                                        required>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-500 mb-1">K.Mandi</label>
+                                    <input type="number" name="kamar_mandi"
+                                        value="{{ input['Kamar Mandi'] if input else 2 }}"
+                                        class="w-full bg-slate-50 border border-slate-300 rounded-lg text-sm p-2.5"
+                                        required>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-500 mb-1">Lantai</label>
+                                    <input type="number" name="jumlah_lantai"
+                                        value="{{ input['Jumlah Lantai'] if input else 1 }}"
+                                        class="w-full bg-slate-50 border border-slate-300 rounded-lg text-sm p-2.5"
+                                        required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4 pt-4 border-t border-slate-100">
+                            <h3 class="text-xs font-bold text-blue-600 uppercase tracking-wider">3. Fasilitas & Kondisi
+                            </h3>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-500 mb-1">Listrik (VA)</label>
+                                    <select name="listrik"
+                                        class="w-full bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg p-2.5">
+                                        <option value="450">450 VA</option>
+                                        <option value="900">900 VA</option>
+                                        <option value="1300" selected>1300 VA (Standard)</option>
+                                        <option value="2200">2200 VA (Medium)</option>
+                                        <option value="3500">3500 VA (High)</option>
+                                        <option value="4400">4400 VA</option>
+                                        <option value="5500">5500 VA</option>
+                                        <option value="6600">6600 VA</option>
+                                        <option value="7700">7700 VA</option>
+                                        <option value="10000">> 10000 VA (Luxury)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-500 mb-1">Internet Ready</label>
+                                    <select name="internet"
+                                        class="w-full bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg p-2.5">
+                                        {% for item in internet_list %}
+                                        <option value="{{ item }}" {% if input and input['Terjangkau Internet']==item
+                                            %}selected{% endif %}>{{ item }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-500 mb-1">Posisi Hook?</label>
+                                    <select name="hook"
+                                        class="w-full bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg p-2.5">
+                                        {% for item in hook_list %}
+                                        <option value="{{ item }}" {% if input and input['Hook']==item %}selected{%
+                                            endif %}>{{ item }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-500 mb-1">Perabotan</label>
+                                    <select name="perabotan"
+                                        class="w-full bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg p-2.5">
+                                        {% for item in perabotan_list %}
+                                        <option value="{{ item }}" {% if input and input['Kondisi Perabotan']==item
+                                            %}selected{% endif %}>{{ item }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-medium text-slate-500 mb-1">Kondisi Bangunan</label>
+                                <select name="kondisi_properti"
+                                    class="w-full bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg p-2.5">
+                                    {% for item in properti_list %}
+                                    <option value="{{ item }}" {% if input and input['Kondisi Properti']==item
+                                        %}selected{% endif %}>{{ item }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <button type="submit"
+                            class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-lg transition-all shadow-lg shadow-slate-900/10 mt-6 flex items-center justify-center gap-2">
+                            <span>Jalankan Analisis</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="lg:col-span-8">
+                {% if result_exists %}
+
+                <div class="flex items-center justify-between mb-8">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-900">Hasil Analisis</h2>
+                        <p class="text-slate-500">Estimasi berbasis 12 parameter input.</p>
+                    </div>
+                    <button
+                        class="text-sm font-semibold text-blue-600 hover:text-blue-800 border border-blue-200 bg-blue-50 px-4 py-2 rounded-lg transition">
+                        Download Report
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                    <div class="bg-white rounded-xl p-8 border border-slate-200 shadow-sm relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-green-50 rounded-bl-full -mr-10 -mt-10 z-0">
+                        </div>
+                        <div class="relative z-10">
+                            <div class="flex items-center gap-2 mb-6">
+                                <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                                <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Market
+                                    Valuation</span>
+                            </div>
+                            <h3 class="text-slate-400 font-medium text-sm mb-1">Estimasi Harga Wajar</h3>
+                            <div class="text-3xl font-extrabold text-slate-900 tracking-tight mb-4">
+                                {{ price }}
+                            </div>
+                            <div class="bg-slate-50 rounded-lg p-3 border border-slate-100">
+                                <p class="text-xs text-slate-500 leading-relaxed">
+                                    <span class="font-bold text-slate-700">Random Forest:</span>
+                                    Mempertimbangkan faktor strategis seperti posisi Hook, Sertifikat, dan kondisi
+                                    perabotan.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl p-8 border border-slate-200 shadow-sm relative overflow-hidden">
+                        <div
+                            class="absolute top-0 right-0 w-32 h-32 {{ cluster.bg }} rounded-bl-full -mr-10 -mt-10 z-0">
+                        </div>
+
+                        <div class="relative z-10">
+                            <div class="flex items-center gap-2 mb-6">
+                                <div class="w-2 h-2 rounded-full bg-blue-500"></div>
+                                <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Asset
+                                    Profiling</span>
+                            </div>
+                            <h3 class="text-slate-400 font-medium text-sm mb-1">Kategori Properti</h3>
+                            <div class="text-2xl font-bold text-slate-900 mb-2 {{ cluster.color }}">
+                                {{ cluster.title }}
+                            </div>
+                            <p class="text-sm text-slate-600 mb-4 line-clamp-3">
+                                {{ cluster.desc }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 border-t border-slate-200 pt-6">
+                    <h4 class="text-sm font-bold text-slate-900 mb-3 uppercase tracking-wider">Input Summary</h4>
+                    <div
+                        class="bg-slate-50 rounded-lg p-4 text-xs text-slate-600 grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div>
+                            <span class="block text-slate-400">Lokasi</span>
+                            <span class="font-semibold">{{ input['Kecamatan'] }}</span>
+                        </div>
+                        <div>
+                            <span class="block text-slate-400">Legalitas</span>
+                            <span class="font-semibold">{{ input['Sertifikat'] }}</span>
+                        </div>
+                        <div>
+                            <span class="block text-slate-400">Luas T/B</span>
+                            <span class="font-semibold">{{ input['Luas Tanah'] }} / {{ input['Luas Bangunan'] }}
+                                m²</span>
+                        </div>
+                        <div>
+                            <span class="block text-slate-400">Fitur</span>
+                            <span class="font-semibold">{{ input['Hook'] }}, {{ input['Kondisi Perabotan'] }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                {% else %}
+                <div
+                    class="h-full min-h-[400px] flex flex-col items-center justify-center bg-white rounded-xl border border-dashed border-slate-300 p-12 text-center">
+                    <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-slate-300" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900">Analisis Properti</h3>
+                    <p class="text-slate-500 max-w-sm mt-2 mb-6">Silakan lengkapi 12 parameter di sebelah kiri (Lokasi,
+                        Fisik, & Fasilitas) untuk hasil yang akurat.</p>
+                </div>
+                {% endif %}
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="mt-12 border-t border-slate-200 bg-white py-8">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <p class="text-xs text-slate-400">&copy; Kelompok 7</p>
+        </div>
+    </footer>
+
+</body>
+
+</html>
