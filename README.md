@@ -24,7 +24,8 @@ The project is structured into three main components:
 ## Project Directory Structure
 Ensure your project folder follows this specific hierarchy for the scripts to function correctly:
 
-/root
+```markdown
+/PropInsight_Project_Root
 │
 ├── README.md                           # Project documentation
 ├── requirements.txt                    # List of Python dependencies
