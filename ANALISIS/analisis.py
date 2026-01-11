@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 import os
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, StandardScaler
@@ -14,7 +16,7 @@ def main():
     dataset_path = os.path.join(script_dir, '..', 'DATASET', 'Combined_Datalist_v1.1.csv')
 
     print("----------------------------------------------------")
-    print("   LAB RISET ANALISIS - FULL FEATURES MODE")
+    print("ANALISIS ")
     print("----------------------------------------------------")
     
     # LOAD DATA
@@ -65,25 +67,36 @@ def main():
         'Terjangkau Internet'
     ]
 
+    print("\n[ANALYSIS] Generating Correlation Matrix...")
+
+    df_corr = df[NUMERIC_FEATURES + CATEGORICAL_FEATURES + ['Price']].copy()
+    encoders = {}
+    for col in CATEGORICAL_FEATURES:
+        le = LabelEncoder()
+        df_corr[col] = le.fit_transform(df_corr[col].astype(str))
+        encoders[col] = le
+    
+    # Hitung Korelasi
+    corr_matrix = df_corr.corr()
+    
+    # Plot Heatmap
+    plt.figure(figsize=(12, 10))
+    sns.heatmap(corr_matrix[['Price']].sort_values(by='Price', ascending=False), 
+                annot=True, cmap='coolwarm', vmin=-1, vmax=1)
+    plt.title('Korelasi Fitur terhadap Harga (Price)')
+    
+    path_viz_corr = os.path.join(script_dir, 'viz_1_correlation.png')
+    plt.savefig(path_viz_corr, bbox_inches='tight')
+    plt.close()
+    print(f"-> Gambar disimpan: {path_viz_corr}")
+
     # SUPERVISED LEARNING (PREDIKSI HARGA)
     print("\n[SUPERVISED] Running Random Forest...")
     
     # Gabungkan semua fitur
-    features_sup = NUMERIC_FEATURES + CATEGORICAL_FEATURES
-    target_sup = 'Price'
-    
-    X = df[features_sup].copy()
-    y = df[target_sup]
-    
-    # ENCODING OTOMATIS (LOOPING)
-    # Simpan encoder dalam dictionary 
-    encoders = {} 
-    
-    for col in CATEGORICAL_FEATURES:
-        le = LabelEncoder()
-        # Pakai astype(str) untuk menjaga jika ada data campuran
-        X[col] = le.fit_transform(X[col].astype(str))
-        encoders[col] = le 
+    features_sup = NUMERIC_FEATURES + CATEGORICAL_FEATURES    
+    X = df_corr[features_sup].copy()
+    y = df_corr['Price']
 
     # Split Data
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -97,34 +110,91 @@ def main():
     rmse = np.sqrt(mean_squared_error(y_test, y_pred))
     
     print(f"-> RMSE (Error Rata-rata) : Rp {rmse:,.0f}")
+
+    # [TAMBAHAN BARU] Hitung MAE
+    mae = mean_absolute_error(y_test, y_pred)
+    print(f"-> MAE  (Rata-rata Selisih Real) : Rp {mae:,.0f}")
     
     # Feature Importance (Cek Faktor Paling Berpengaruh)
     importances = pd.Series(model_rf.feature_importances_, index=features_sup).sort_values(ascending=False)
-    print(f"\n-> Top 5 Faktor Penentu Harga:\n{importances.head(5).to_string()}")
+    plt.figure(figsize=(10, 6))
+    importances.head(10).plot(kind='barh', color='teal')
+    plt.title('Top 10 Faktor Penentu Harga Properti')
+    plt.xlabel('Tingkat Kepentingan (Importance Score)')
+    plt.gca().invert_yaxis()
+
+    path_viz_feat = os.path.join(script_dir, 'viz_2_feature_importance.png')
+    plt.savefig(path_viz_feat)
+    plt.close()
+    print(f"-> Gambar disimpan: {path_viz_feat}")
+
+    # Visualisasi: Actual vs Predicted
+    plt.figure(figsize=(10, 6))
+    plt.scatter(y_test, y_pred, alpha=0.5, color='blue')
+    plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'r--', lw=2) # Garis diagonal
+    plt.xlabel('Harga Aktual')
+    plt.ylabel('Harga Prediksi')
+    plt.title('Evaluasi Prediksi: Aktual vs Prediksi')
+    plt.grid(True)
+    
+    path_viz_pred = os.path.join(script_dir, 'viz_3_prediction.png')
+    plt.savefig(path_viz_pred)
+    plt.close()
+    print(f"-> Gambar disimpan: {path_viz_pred}")
 
     # UNSUPERVISED LEARNING (CLUSTERING)
-    print("\n[UNSUPERVISED] Running K-Means...")
+    print("\n[UNSUPERVISED] Running Elbow Method...")
     
     # Untuk clustering, fokus pada FISIK BANGUNAN (Numerik)
-    # Agar klasternya berdasarkan "Bentuk Rumah" (Besar/Kecil/Tinggi)
     features_unsup = NUMERIC_FEATURES 
     X_cluster = df[features_unsup].copy()
     
     # Scaling
     scaler = StandardScaler()
     X_cluster_scaled = scaler.fit_transform(X_cluster)
+
+    # 1. Elbow Method (Mencari k optimal)
+    inertia = []
+    K_range = range(1, 10)
+    for k in K_range:
+        km = KMeans(n_clusters=k, random_state=42, n_init=10)
+        km.fit(X_cluster_scaled)
+        inertia.append(km.inertia_)
+        
+    plt.figure(figsize=(8, 5))
+    plt.plot(K_range, inertia, marker='o', linestyle='--')
+    plt.xlabel('Jumlah Klaster (k)')
+    plt.ylabel('Inertia (Sum of Squared Errors)')
+    plt.title('Elbow Method untuk Menentukan k Optimal')
+    plt.grid(True)
+    
+    path_viz_elbow = os.path.join(script_dir, 'viz_4_elbow.png')
+    plt.savefig(path_viz_elbow)
+    plt.close()
+    print(f"-> Gambar disimpan: {path_viz_elbow}")
     
     # Modeling
+    print("[UNSUPERVISED] Running Clustering...")
     kmeans = KMeans(n_clusters=3, random_state=42, n_init=10)
     df['Cluster'] = kmeans.fit_predict(X_cluster_scaled)
     
     # Evaluation
     sil_score = silhouette_score(X_cluster_scaled, df['Cluster'], sample_size=1000)
     print(f"-> Silhouette Score: {sil_score:.3f}")
-    
-    # Profiling (Melihat rata-rata tiap klaster)
-    print("\n-> Profil Klaster (Rata-rata):")
-    print(df.groupby('Cluster')[features_unsup + ['Price']].mean().sort_values(by='Price'))
+
+    # Visualisasi Cluster (Luas Tanah vs Harga)
+    plt.figure(figsize=(10, 6))
+    sns.scatterplot(data=df, x='Luas Tanah', y='Price', hue='Cluster', palette='viridis', alpha=0.6)
+    plt.title('Sebaran Klaster: Luas Tanah vs Harga')
+    plt.xlabel('Luas Tanah (m²)')
+    plt.ylabel('Harga (Rupiah)')
+    plt.xlim(0, 1000)
+    plt.ylim(0, 10000000000)
+
+    path_viz_cluster = os.path.join(script_dir, 'viz_5_cluster.png')
+    plt.savefig(path_viz_cluster)
+    plt.close()
+    print(f"-> Gambar disimpan: {path_viz_cluster}")
 
     # EXPORT HASIL
     print("\n[EXPORT] Saving CSV...")

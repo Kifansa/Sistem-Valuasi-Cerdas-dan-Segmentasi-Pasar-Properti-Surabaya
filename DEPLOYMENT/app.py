@@ -11,7 +11,7 @@ model_dir = os.path.join(base_dir, 'models')
 
 # LOAD MODEL & METADATA
 print("\n--------------------------------------------")
-print("   STARTING PROPINSIGHT SERVER")
+print("STARTING SERVER")
 print("--------------------------------------------")
 
 try:
