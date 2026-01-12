@@ -12,7 +12,6 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.cluster import KMeans
 
 def main():
-    # SETUP PATH
     base_dir = os.path.dirname(os.path.abspath(__file__))
     model_dir = os.path.join(base_dir, 'models')
     if not os.path.exists(model_dir):
@@ -24,20 +23,17 @@ def main():
     print("TRAINING PIPELINE")
     print("--------------------------------------------")
 
-    # LOAD & CLEAN DATA
     try:
         df = pd.read_csv(dataset_path, sep=';')
     except FileNotFoundError:
         print(f"\n[FATAL ERROR] Dataset tidak ditemukan di: {dataset_path}")
         return
 
-    # Cleaning Standard
     df.columns = df.columns.str.strip()
     df['Price'] = df['Price'].astype(str).str.replace('.', '', regex=False)
     df['Price'] = pd.to_numeric(df['Price'], errors='coerce')
     df = df[df['Price'] > 0].copy()
 
-    # Features Definition
     NUMERIC_FEATURES = [
         'Luas Tanah', 
         'Luas Bangunan', 
@@ -56,12 +52,10 @@ def main():
         'Terjangkau Internet'  
     ]
 
-    # Handle Missing Values pada Kolom Kategori
     for col in CATEGORICAL_FEATURES:
         if col in df.columns:
             df[col] = df[col].fillna('Unknown')
 
-    # PIPELINE SETUP
     numeric_transformer = Pipeline(steps=[
         ('imputer', SimpleImputer(strategy='median')),
         ('scaler', StandardScaler())
@@ -78,7 +72,6 @@ def main():
             ('cat', categorical_transformer, CATEGORICAL_FEATURES)
         ])
 
-    # TRAINING MODELS
     print("Training Supervised Model (Regression)...")
     model_sup = Pipeline(steps=[
         ('preprocessor', preprocessor),
@@ -103,7 +96,6 @@ def main():
     X_cluster = df[['Luas Tanah', 'Luas Bangunan', 'Kamar Tidur', 'Kamar Mandi']]
     model_unsup.fit(X_cluster)
 
-    # SAVING MODELS & METADATA
     print("Saving Models to Disk...")
     joblib.dump(model_sup, os.path.join(model_dir, 'model_supervised.joblib'))
     joblib.dump(model_unsup, os.path.join(model_dir, 'model_unsupervised.joblib'))
